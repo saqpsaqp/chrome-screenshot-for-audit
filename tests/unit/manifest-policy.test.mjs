@@ -11,6 +11,16 @@ const manifest = JSON.parse(readFileSync(join(ROOT, 'manifest.json'), 'utf8'));
 
 const ALLOWED_PERMISSIONS = ['activeTab', 'downloads', 'storage'];
 const ALLOWED_HOSTS = ['https://api.ipify.org/*'];
+const ALLOWED_ORIGINS = new Set(['https://api.ipify.org']);
+
+/** Exact origin match: a prefix check would accept https://api.ipify.org.evil.example */
+export function isAllowedUrl(raw) {
+  try {
+    return ALLOWED_ORIGINS.has(new URL(raw).origin);
+  } catch {
+    return false;
+  }
+}
 
 function packagedFiles() {
   const script = readFileSync(join(ROOT, 'pack.sh'), 'utf8');
@@ -60,7 +70,13 @@ describe('source policy', () => {
   it('only contacts the allowlisted network endpoint', () => {
     for (const file of sources) {
       const urls = readFileSync(join(ROOT, file), 'utf8').match(/https?:\/\/[^\s'"`)<>]+/g) ?? [];
-      for (const url of urls) assert.ok(url.startsWith('https://api.ipify.org'), `${file}: unexpected URL ${url}`);
+      for (const url of urls) assert.ok(isAllowedUrl(url), `${file}: unexpected URL ${url}`);
+    }
+  });
+  it('URL allowlist cannot be bypassed with look-alike hosts', () => {
+    assert.ok(isAllowedUrl('https://api.ipify.org?format=json'));
+    for (const bad of ['https://api.ipify.org.evil.example/', 'https://api.ipify.org@evil.example/', 'http://api.ipify.org/', 'https://evil.example/?https://api.ipify.org']) {
+      assert.ok(!isAllowedUrl(bad), bad);
     }
   });
   it('packages every runtime file and nothing else', () => {
