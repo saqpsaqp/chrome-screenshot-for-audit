@@ -5,14 +5,14 @@ Copy/paste reference for the Developer Dashboard (<https://chrome.google.com/web
 ## Package
 
 ```bash
-./pack.sh   # -> proof-shot-v1.0.0.zip
+./pack.sh   # -> proof-shot-v<version>.zip (or download it from the GitHub release)
 ```
 
 ## Store listing tab
 
 **Name:** Proof-Shot
 
-**Summary** (max 132 chars):
+**Summary** (max 132 chars, taken from `description` in `manifest.json`; keep both identical):
 > Audit-grade screenshots with a watermark (timestamp, public IP, URL, SHA-256) and a JSON evidence file for verification.
 
 **Category:** Tools
@@ -48,7 +48,8 @@ PRIVATE BY DESIGN
 • The only network request is to api.ipify.org to read your public IP at capture time.
 • Minimal permissions: only the tab you click on is captured (activeTab).
 
-Open source: https://github.com/saqpsaqp/chrome-screenshot-for-audit
+Open source (MIT): https://github.com/saqpsaqp/chrome-screenshot-for-audit
+Made by Saul Quintero: https://saulquintero.com.co/utilities/
 ```
 
 **Graphic assets** (in `store/`, regenerate with `store/build.sh`):
@@ -60,7 +61,7 @@ Open source: https://github.com/saqpsaqp/chrome-screenshot-for-audit
 | Screenshot 2 (1280×800) | `store/screenshot-2.png` |
 | Small promo tile 440×280 | `store/promo-small-440x280.png` |
 
-**Homepage URL:** https://github.com/saqpsaqp/chrome-screenshot-for-audit
+**Homepage URL:** https://saulquintero.com.co/utilities/ (same as `homepage_url` in the manifest)
 **Support URL:** https://github.com/saqpsaqp/chrome-screenshot-for-audit/issues
 
 ## Privacy practices tab

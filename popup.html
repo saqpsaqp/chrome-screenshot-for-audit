@@ -13,6 +13,9 @@
     .capture-btn { width: 100%; margin-top: 12px; padding: 10px; font-size: 14px; }
     footer { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
     body { overflow-x: hidden; }
+    .credit { margin-top: 8px; text-align: center; font-size: 10px; letter-spacing: .12em; color: var(--muted); }
+    .credit a { color: var(--text); font-weight: 700; text-decoration: none; }
+    .credit a:hover { color: var(--accent); }
     #lastHash { font-size: 11px; word-break: break-all; font-family: ui-monospace, Consolas, monospace; }
   </style>
 </head>
@@ -60,6 +63,7 @@
     <span class="muted" id="historyCount"></span>
     <button type="button" class="link" id="openOptions">Settings &amp; history</button>
   </footer>
+  <div class="credit">Proof-Shot by <a href="https://saulquintero.com.co/utilities/" target="_blank" rel="noopener noreferrer">saulquintero.com.co</a></div>
 
   <script type="module" src="popup.js"></script>
 </body>
