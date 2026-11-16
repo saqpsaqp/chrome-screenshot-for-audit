@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Evidence Capture</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { width: 320px; padding: 14px; }
+    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .session-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-top: 8px; }
+    .session-name { font-weight: 700; font-size: 14px; word-break: break-word; }
+    .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .capture-btn { width: 100%; margin-top: 12px; padding: 10px; font-size: 14px; }
+    footer { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+    #lastHash { font-size: 11px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="appName">Evidence Capture</h1>
+    <span class="muted" id="version"></span>
+  </header>
+
+  <!-- Shown when there is no active session -->
+  <form id="sessionForm" class="hidden" autocomplete="off">
+    <p class="muted">Start a session to group your evidence. Files are saved to
+      <code>Downloads/&lt;root&gt;/&lt;session&gt;/&lt;date&gt;/</code>.</p>
+    <label for="sessionName">Session name <small>(required)</small></label>
+    <input type="text" id="sessionName" maxlength="64" required placeholder="e.g. PCI-DSS Q4 Review">
+    <label for="auditorStart">Auditor</label>
+    <input type="text" id="auditorStart" maxlength="64" placeholder="Your name or ID">
+    <label for="caseIdStart">Case / ticket ID <small>(optional)</small></label>
+    <input type="text" id="caseIdStart" maxlength="64" placeholder="e.g. SEC-1234">
+    <button type="submit" class="primary capture-btn">Start session</button>
+  </form>
+
+  <!-- Shown when a session is active -->
+  <section id="capturePanel" class="hidden">
+    <div class="session-box">
+      <div class="row">
+        <span class="muted">Session</span>
+        <button type="button" class="link" id="endSession">End session</button>
+      </div>
+      <div class="session-name" id="sessionLabel"></div>
+      <div class="muted" id="auditorLabel"></div>
+    </div>
+
+    <label for="caseId">Case / ticket ID <small>(optional)</small></label>
+    <input type="text" id="caseId" maxlength="64" placeholder="e.g. SEC-1234">
+
+    <button type="button" class="primary capture-btn" id="captureVisible">Capture visible area</button>
+    <div class="muted" id="shortcutHint"></div>
+
+    <div class="status" id="status"></div>
+    <div class="muted" id="lastHash"></div>
+  </section>
+
+  <footer>
+    <span class="muted" id="historyCount"></span>
+    <button type="button" class="link" id="openOptions">Settings &amp; history</button>
+  </footer>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
