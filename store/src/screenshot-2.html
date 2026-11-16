@@ -1,0 +1,34 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>body{width:1280px;height:800px;display:flex;align-items:center;justify-content:center;gap:48px;padding:0 48px}
+.popup{width:320px}.col{width:560px}
+pre{margin:18px 0 0;background:#0b0d10;border:1px solid #2b323a;border-radius:10px;padding:16px 18px;font:13px/1.5 ui-monospace,Consolas,monospace;color:#b8f5c4;white-space:pre-wrap;word-break:break-all;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+h1{font-size:36px}</style></head>
+<body>
+  <img class="shot popup" src="popup-demo.png">
+  <div class="col">
+    <h1>Verifiable <span class="accent">evidence</span>, organised</h1>
+    <ul>
+      <li>Sessions → <code>Proof-Shot/&lt;session&gt;/&lt;date&gt;/</code></li>
+      <li>JSON sidecar per capture · <code>sha256sum</code> to verify</li>
+    </ul>
+<pre>{
+  "evidence_id": "15b9177e-ccff-4bd9-aaa5-0f8e47936c39",
+  "session": "SOC2 2026 Q4",
+  "case_id": "SEC-1234",
+  "auditor": "J. Doe",
+  "captured_at_utc": "2026-11-16T21:48:34.404Z",
+  "timezone": "America/Bogota",
+  "page": {
+    "url_redacted": "http://localhost:8765/iam/policies/prod-admin-boundary"
+  },
+  "network": {
+    "public_ip": "203.0.113.42"
+  },
+  "integrity": {
+    "algorithm": "SHA-256",
+    "sha256_original": "e90a845d236c3c7d32bc19ad0341743cdd423a67b788c9680077bbbb21e03979",
+    "sha256_final": "eec13e0c8408583c77ac2697521d3c9d257a9227563782218cfcb9e88d85a1ea"
+  }
+}</pre>
+  </div>
+</body></html>

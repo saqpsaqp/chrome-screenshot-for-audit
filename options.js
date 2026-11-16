@@ -31,7 +31,7 @@ async function loadShortcut() {
 async function loadHistory() {
   const history = await getHistory();
   $('historySummary').textContent = history.length
-    ? `${history.length} captures logged. Showing the latest ${Math.min(history.length, TABLE_ROWS)}.`
+    ? `${history.length} capture${history.length === 1 ? "" : "s"} logged. Showing the latest ${Math.min(history.length, TABLE_ROWS)}.`
     : 'No captures yet.';
 
   const body = $('historyBody');

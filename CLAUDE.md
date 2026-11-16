@@ -4,13 +4,15 @@ Guidance for Claude Code when working in this repository.
 
 ## What This Is
 
-Chrome extension (Manifest V3, no build step) that captures the visible tab, adds an audit watermark band and downloads a PNG + JSON evidence sidecar.
+Proof-Shot: Chrome extension (Manifest V3, no build step) that captures the visible tab, adds an audit watermark band and downloads a PNG + JSON evidence sidecar.
 
 ## Workflow
 
 - `main` is protected by convention: work on feature branches and open PRs with `gh pr create`.
 - Load unpacked from `chrome://extensions/` to test. `./pack.sh` builds the store zip (update the file list when adding top-level files).
 - Code, comments and docs in English.
+- Store material lives in `store/` (`STORE_LISTING.md`, assets rendered by `store/build.sh` from `store/src/*.html`). `PRIVACY.md` is the published privacy policy: update it whenever data handling or permissions change.
+- E2E testing: headless Chrome via `--remote-debugging-pipe --enable-unsafe-extension-debugging` + CDP `Extensions.loadUnpacked`. `captureVisibleTab` needs a user gesture for `activeTab`, so the test copy of the manifest adds `<all_urls>`; never ship that. `Browser.setDownloadBehavior` overrides download filenames, so set `download.default_directory` in the profile Preferences instead.
 
 ## Architecture
 

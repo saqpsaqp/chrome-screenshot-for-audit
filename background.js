@@ -12,6 +12,19 @@ class SessionRequiredError extends Error {
 
 let captureInProgress = false;
 
+const RESTRICTED_PAGE_PATTERN = /activeTab|Cannot access|chrome:\/\/|extensions gallery|Missing host permission/i;
+
+/** Translates Chrome capture errors into actionable messages. */
+function friendlyError(err) {
+  if (err?.code) return err;
+  if (RESTRICTED_PAGE_PATTERN.test(err?.message ?? '')) {
+    const e = new Error('This page cannot be captured (browser pages like chrome://, the Chrome Web Store and some PDF viewers are protected). Open the page you want and use the extension icon or shortcut there.');
+    e.code = 'RESTRICTED_PAGE';
+    return e;
+  }
+  return err;
+}
+
 async function runCapture(tabId) {
   if (captureInProgress) throw new Error('A capture is already in progress.');
   const session = await getSession();
@@ -34,6 +47,8 @@ async function runCapture(tabId) {
       image: evidence.files.image,
     });
     return evidence;
+  } catch (err) {
+    throw friendlyError(err);
   } finally {
     captureInProgress = false;
   }

@@ -1,6 +1,8 @@
-# Evidence Capture
+# Proof-Shot
 
 Chrome extension (Manifest V3) that takes **audit-grade screenshots**: each capture gets a visible watermark band and a JSON evidence sidecar with SHA-256 hashes, so evidence can be verified later.
+
+![Proof-Shot](store/screenshot-1.png)
 
 ## Features
 
@@ -30,13 +32,18 @@ Both values must match. `sha256_original` is the hash of the raw screenshot befo
 2. Click **Load unpacked** and select this folder.
 3. Pin the extension, open the popup and start a session.
 
-## Packaging
+## Packaging and publishing
 
 ```bash
-./pack.sh   # -> evidence-capture-v<version>.zip
+./pack.sh          # -> proof-shot-v<version>.zip (upload to the Chrome Web Store)
+store/build.sh     # re-render store screenshots and promo tile from store/src/*.html
 ```
 
+Listing texts, permission justifications and data disclosures: [store/STORE_LISTING.md](store/STORE_LISTING.md).
+
 ## Privacy
+
+Full policy: [PRIVACY.md](PRIVACY.md).
 
 - The only network request is to `https://api.ipify.org` to get the public IP at capture time.
 - Everything else stays local: settings, session and history live in `chrome.storage.local`; evidence files go to your Downloads folder.
@@ -44,6 +51,5 @@ Both values must match. `sha256_original` is the hash of the raw screenshot befo
 
 ## Roadmap
 
-- [x] Phase 1: visible capture, watermark, JSON sidecar, sessions, shortcut, history
-- [ ] Phase 2: region selection
-- [ ] Phase 3: icons, store listing, privacy policy
+- [x] v1.0: visible capture, watermark, JSON sidecar, sessions, shortcut, history, store assets
+- [ ] v1.1: region selection
