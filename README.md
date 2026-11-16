@@ -79,3 +79,7 @@ Full policy: [PRIVACY.md](PRIVACY.md). Security model and vulnerability reportin
 
 - [x] v1.0: visible capture, watermark, JSON sidecar, sessions, shortcut, history, store assets
 - [ ] v1.1: region selection
+
+## License
+
+[MIT](LICENSE) © 2026 Saul Quintero
