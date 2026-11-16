@@ -1,18 +1,35 @@
 {
   "manifest_version": 3,
-  "name": "Evidence Capture",
-  "version": "0.1.0",
+  "name": "Proof-Shot",
+  "version": "1.0.0",
   "description": "Audit-grade screenshots with a watermark (timestamp, public IP, URL, SHA-256) and a JSON evidence sidecar.",
   "minimum_chrome_version": "116",
-  "permissions": ["activeTab", "downloads", "storage"],
-  "host_permissions": ["https://api.ipify.org/*"],
+  "permissions": [
+    "activeTab",
+    "downloads",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.ipify.org/*"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "background": {
     "service_worker": "background.js",
     "type": "module"
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Evidence Capture"
+    "default_title": "Proof-Shot",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    }
   },
   "options_page": "options.html",
   "commands": {

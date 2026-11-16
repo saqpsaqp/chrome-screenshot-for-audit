@@ -12,6 +12,19 @@ class SessionRequiredError extends Error {
 
 let captureInProgress = false;
 
+const RESTRICTED_PAGE_PATTERN = /activeTab|Cannot access|chrome:\/\/|extensions gallery|Missing host permission/i;
+
+/** Translates Chrome capture errors into actionable messages. */
+function friendlyError(err) {
+  if (err?.code) return err;
+  if (RESTRICTED_PAGE_PATTERN.test(err?.message ?? '')) {
+    const e = new Error('This page cannot be captured (browser pages like chrome://, the Chrome Web Store and some PDF viewers are protected). Open the page you want and use the extension icon or shortcut there.');
+    e.code = 'RESTRICTED_PAGE';
+    return e;
+  }
+  return err;
+}
+
 async function runCapture(tabId) {
   if (captureInProgress) throw new Error('A capture is already in progress.');
   const session = await getSession();
@@ -34,6 +47,8 @@ async function runCapture(tabId) {
       image: evidence.files.image,
     });
     return evidence;
+  } catch (err) {
+    throw friendlyError(err);
   } finally {
     captureInProgress = false;
   }
@@ -45,8 +60,14 @@ async function flashBadge(text, color, ms = 2500) {
   setTimeout(() => chrome.action.setBadgeText({ text: '' }), ms);
 }
 
-chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
-  if (msg?.type !== 'capture') return false;
+const EXTENSION_ORIGIN = new URL(chrome.runtime.getURL('/')).origin;
+
+function isTrustedSender(sender) {
+  return sender?.id === chrome.runtime.id && typeof sender.url === 'string' && new URL(sender.url).origin === EXTENSION_ORIGIN;
+}
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg?.type !== 'capture' || !isTrustedSender(sender) || !Number.isInteger(msg.tabId)) return false;
   runCapture(msg.tabId)
     .then((evidence) => sendResponse({ ok: true, evidence }))
     .catch((err) => sendResponse({ ok: false, error: err.message, code: err.code ?? null }));

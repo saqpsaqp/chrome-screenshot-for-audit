@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Build, attest and publish GitHub release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          package-manager-cache: false # no cache in release builds (cache poisoning)
+      - name: Tag must match manifest version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          VERSION=$(jq -r .version manifest.json)
+          [ "$TAG" = "v$VERSION" ] || { echo "::error::Tag $TAG does not match manifest version $VERSION"; exit 1; }
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+      - run: npm test
+      - run: npm run test:e2e
+      - name: Pack
+        run: |
+          ./pack.sh
+          sha256sum proof-shot-v*.zip > SHA256SUMS.txt
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: proof-shot-v*.zip
+      - uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
+        with:
+          files: |
+            proof-shot-v*.zip
+            SHA256SUMS.txt
+          generate_release_notes: true

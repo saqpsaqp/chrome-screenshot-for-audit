@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 VERSION=$(python3 -c 'import json; print(json.load(open("manifest.json"))["version"])')
-OUT="evidence-capture-v${VERSION}.zip"
+OUT="proof-shot-v${VERSION}.zip"
 
 rm -f "$OUT"
 zip -qr "$OUT" \
@@ -14,6 +14,6 @@ zip -qr "$OUT" \
   options.html options.js \
   styles.css \
   lib \
-  $( [ -d icons ] && echo icons )
+  icons/icon16.png icons/icon32.png icons/icon48.png icons/icon128.png
 
 echo "Created: $OUT"

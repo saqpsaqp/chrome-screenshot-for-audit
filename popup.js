@@ -30,7 +30,7 @@ async function render() {
 
   const commands = await chrome.commands.getAll();
   const shortcut = commands.find((c) => c.name === 'capture-visible')?.shortcut;
-  $('shortcutHint').innerHTML = '';
+  $('shortcutHint').replaceChildren();
   if (shortcut) {
     const kbd = document.createElement('kbd');
     kbd.textContent = shortcut;

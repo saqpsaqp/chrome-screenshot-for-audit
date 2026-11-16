@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Evidence Capture</title>
+  <title>Proof-Shot</title>
   <link rel="stylesheet" href="styles.css">
   <style>
     body { width: 320px; padding: 14px; }
@@ -12,12 +12,13 @@
     .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .capture-btn { width: 100%; margin-top: 12px; padding: 10px; font-size: 14px; }
     footer { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
-    #lastHash { font-size: 11px; }
+    body { overflow-x: hidden; }
+    #lastHash { font-size: 11px; word-break: break-all; font-family: ui-monospace, Consolas, monospace; }
   </style>
 </head>
 <body>
   <header>
-    <h1 id="appName">Evidence Capture</h1>
+    <h1 id="appName">Proof-Shot</h1>
     <span class="muted" id="version"></span>
   </header>
 
