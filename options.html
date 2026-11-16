@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Evidence Capture Settings</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { max-width: 980px; margin: 0 auto; padding: 24px 16px 48px; }
+    h1 { font-size: 20px; margin-bottom: 20px; }
+    section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 18px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0 16px; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+    .table-wrap { overflow-x: auto; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td.url { max-width: 280px; overflow: hidden; text-overflow: ellipsis; }
+    th { color: var(--muted); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <h1 id="title">Evidence Capture</h1>
+
+  <section>
+    <h2>Settings</h2>
+    <form id="settingsForm" class="grid" autocomplete="off">
+      <div>
+        <label for="auditor">Auditor</label>
+        <input type="text" id="auditor" maxlength="64" placeholder="Your name or ID">
+      </div>
+      <div>
+        <label for="rootFolder">Root folder <small>(inside Downloads)</small></label>
+        <input type="text" id="rootFolder" maxlength="64" placeholder="EvidenceCapture">
+      </div>
+    </form>
+    <div class="actions">
+      <button type="submit" form="settingsForm" class="primary">Save</button>
+      <span class="status" id="settingsStatus"></span>
+    </div>
+    <p class="muted">Files are saved to <code>Downloads/<span id="pathPreview">EvidenceCapture</span>/&lt;session&gt;/&lt;YYYY-MM-DD&gt;/</code></p>
+  </section>
+
+  <section>
+    <h2>Keyboard shortcut</h2>
+    <p>Capture visible area: <kbd id="shortcut">—</kbd></p>
+    <div class="actions">
+      <button type="button" id="editShortcut">Change shortcut</button>
+      <span class="muted">Opens <code>chrome://extensions/shortcuts</code></span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Capture history</h2>
+    <p class="muted" id="historySummary"></p>
+    <div class="actions">
+      <button type="button" id="exportCsv">Export CSV</button>
+      <button type="button" id="clearHistory">Clear history</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Captured (UTC)</th><th>Session</th><th>Case</th><th>URL</th><th>IP</th><th>SHA-256 (final)</th></tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

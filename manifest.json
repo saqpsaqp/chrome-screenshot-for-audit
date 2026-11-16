@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Evidence Capture",
+  "version": "0.1.0",
+  "description": "Audit-grade screenshots with a watermark (timestamp, public IP, URL, SHA-256) and a JSON evidence sidecar.",
+  "minimum_chrome_version": "116",
+  "permissions": ["activeTab", "downloads", "storage"],
+  "host_permissions": ["https://api.ipify.org/*"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Evidence Capture"
+  },
+  "options_page": "options.html",
+  "commands": {
+    "capture-visible": {
+      "suggested_key": {
+        "default": "Alt+Shift+S",
+        "mac": "Alt+Shift+S"
+      },
+      "description": "Capture visible area as evidence"
+    }
+  }
+}

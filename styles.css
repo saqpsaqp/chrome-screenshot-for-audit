@@ -1,0 +1,93 @@
+:root {
+  --bg: #ffffff;
+  --surface: #f4f6f8;
+  --border: #d8dde3;
+  --text: #1b1f24;
+  --muted: #5f6b77;
+  --accent: #d32f2f;
+  --accent-hover: #b71c1c;
+  --ok: #2e7d32;
+  --error: #c62828;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15181c;
+    --surface: #1f242a;
+    --border: #333a42;
+    --text: #e6e9ed;
+    --muted: #97a1ab;
+    --ok: #66bb6a;
+    --error: #ef5350;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+h1 { font-size: 15px; margin: 0; }
+h2 { font-size: 13px; margin: 0 0 8px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+
+label { display: block; font-weight: 600; margin: 10px 0 4px; }
+label small { font-weight: 400; color: var(--muted); }
+
+input[type="text"] {
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 7px 12px;
+}
+button:hover { border-color: var(--muted); }
+button:disabled { opacity: .55; cursor: default; }
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+button.primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+button.link {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--muted);
+  text-decoration: underline;
+}
+
+.muted { color: var(--muted); }
+.status { min-height: 18px; margin-top: 10px; word-break: break-word; }
+.status.ok { color: var(--ok); }
+.status.error { color: var(--error); }
+.hidden { display: none !important; }
+kbd {
+  font: 11px ui-monospace, Consolas, monospace;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 5px;
+  background: var(--surface);
+}
+code { font: 12px ui-monospace, Consolas, monospace; }
