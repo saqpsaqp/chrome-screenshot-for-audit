@@ -12,6 +12,9 @@ const manifest = JSON.parse(readFileSync(join(ROOT, 'manifest.json'), 'utf8'));
 const ALLOWED_PERMISSIONS = ['activeTab', 'downloads', 'storage'];
 const ALLOWED_HOSTS = ['https://api.ipify.org/*'];
 const ALLOWED_ORIGINS = new Set(['https://api.ipify.org']);
+// User-clicked navigation only (never fetched by the extension).
+const ALLOWED_LINKS = new Set(['https://saulquintero.com.co/utilities/']);
+const SAFE_ANCHOR = /<a href="([^"]+)" target="_blank" rel="noopener noreferrer">/g;
 
 /** Exact origin match: a prefix check would accept https://api.ipify.org.evil.example */
 export function isAllowedUrl(raw) {
@@ -69,8 +72,21 @@ describe('source policy', () => {
   });
   it('only contacts the allowlisted network endpoint', () => {
     for (const file of sources) {
-      const urls = readFileSync(join(ROOT, file), 'utf8').match(/https?:\/\/[^\s'"`)<>]+/g) ?? [];
+      let code = readFileSync(join(ROOT, file), 'utf8');
+      // Allowlisted links are permitted only as anchors with rel="noopener noreferrer".
+      code = code.replace(SAFE_ANCHOR, (match, href) => (ALLOWED_LINKS.has(href) ? '' : match));
+      const urls = code.match(/https?:\/\/[^\s'"`)<>]+/g) ?? [];
       for (const url of urls) assert.ok(isAllowedUrl(url), `${file}: unexpected URL ${url}`);
+    }
+  });
+  it('homepage_url is the author website', () => {
+    assert.ok(ALLOWED_LINKS.has(manifest.homepage_url));
+  });
+  it('external links never open without rel="noopener noreferrer"', () => {
+    for (const file of sources.filter((f) => f.endsWith('.html'))) {
+      for (const tag of readFileSync(join(ROOT, file), 'utf8').match(/<a\s[^>]*target="_blank"[^>]*>/g) ?? []) {
+        assert.match(tag, /rel="noopener noreferrer"/, `${file}: ${tag}`);
+      }
     }
   });
   it('URL allowlist cannot be bypassed with look-alike hosts', () => {

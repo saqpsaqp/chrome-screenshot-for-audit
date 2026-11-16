@@ -1,6 +1,6 @@
 {
   "name": "proof-shot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Dev tooling for the Proof-Shot Chrome extension (not shipped in the extension package).",
   "type": "module",

@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Proof-Shot",
-  "version": "1.0.0",
-  "description": "Audit-grade screenshots with a watermark (timestamp, public IP, URL, SHA-256) and a JSON evidence sidecar.",
+  "version": "1.0.1",
+  "description": "Audit-grade screenshots with a watermark (timestamp, public IP, URL, SHA-256) and a JSON evidence file for verification.",
+  "homepage_url": "https://saulquintero.com.co/utilities/",
   "minimum_chrome_version": "116",
   "permissions": [
     "activeTab",

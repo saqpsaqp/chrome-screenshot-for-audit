@@ -83,3 +83,7 @@ Full policy: [PRIVACY.md](PRIVACY.md). Security model and vulnerability reportin
 ## License
 
 [MIT](LICENSE) © 2026 Saul Quintero
+
+---
+
+Made by [Saul Quintero](https://saulquintero.com.co/utilities/)
