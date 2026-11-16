@@ -60,8 +60,14 @@ async function flashBadge(text, color, ms = 2500) {
   setTimeout(() => chrome.action.setBadgeText({ text: '' }), ms);
 }
 
-chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
-  if (msg?.type !== 'capture') return false;
+const EXTENSION_ORIGIN = new URL(chrome.runtime.getURL('/')).origin;
+
+function isTrustedSender(sender) {
+  return sender?.id === chrome.runtime.id && typeof sender.url === 'string' && new URL(sender.url).origin === EXTENSION_ORIGIN;
+}
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg?.type !== 'capture' || !isTrustedSender(sender) || !Number.isInteger(msg.tabId)) return false;
   runCapture(msg.tabId)
     .then((evidence) => sendResponse({ ok: true, evidence }))
     .catch((err) => sendResponse({ ok: false, error: err.message, code: err.code ?? null }));

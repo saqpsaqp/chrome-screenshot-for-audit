@@ -1,20 +1,9 @@
 import { sanitizeSegment } from './lib/capture.js';
+import { historyToCsv } from './lib/csv.js';
 import { clearHistory, DEFAULT_SETTINGS, getHistory, getSettings, saveSettings } from './lib/storage.js';
 
 const $ = (id) => document.getElementById(id);
 const TABLE_ROWS = 100;
-
-const CSV_COLUMNS = [
-  'evidence_id', 'captured_at_utc', 'session', 'case_id', 'auditor',
-  'url', 'public_ip', 'sha256_original', 'sha256_final', 'image',
-];
-
-/** Quotes a CSV cell and neutralizes spreadsheet formula injection. */
-function csvCell(value) {
-  let s = value == null ? '' : String(value);
-  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
-  return `"${s.replaceAll('"', '""')}"`;
-}
 
 async function loadSettings() {
   const settings = await getSettings();
@@ -73,7 +62,7 @@ $('editShortcut').addEventListener('click', () => chrome.tabs.create({ url: 'chr
 $('exportCsv').addEventListener('click', async () => {
   const history = await getHistory();
   if (!history.length) return;
-  const csv = [CSV_COLUMNS.join(','), ...history.map((r) => CSV_COLUMNS.map((c) => csvCell(r[c])).join(','))].join('\r\n');
+  const csv = historyToCsv(history);
   const url = URL.createObjectURL(new Blob(['﻿', csv], { type: 'text/csv;charset=utf-8' }));
   const { rootFolder } = await getSettings();
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');

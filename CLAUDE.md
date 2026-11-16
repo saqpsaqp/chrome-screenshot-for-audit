@@ -12,7 +12,10 @@ Proof-Shot: Chrome extension (Manifest V3, no build step) that captures the visi
 - Load unpacked from `chrome://extensions/` to test. `./pack.sh` builds the store zip (update the file list when adding top-level files).
 - Code, comments and docs in English.
 - Store material lives in `store/` (`STORE_LISTING.md`, assets rendered by `store/build.sh` from `store/src/*.html`). `PRIVACY.md` is the published privacy policy: update it whenever data handling or permissions change.
-- E2E testing: headless Chrome via `--remote-debugging-pipe --enable-unsafe-extension-debugging` + CDP `Extensions.loadUnpacked`. `captureVisibleTab` needs a user gesture for `activeTab`, so the test copy of the manifest adds `<all_urls>`; never ship that. `Browser.setDownloadBehavior` overrides download filenames, so set `download.default_directory` in the profile Preferences instead.
+- Checks before pushing: `npm run lint && npm test && npm run test:e2e`. `tests/unit/manifest-policy.test.mjs` is a security gate: adding a permission, host, manifest key, network URL or runtime file requires updating it (and `pack.sh`, `PRIVACY.md`, `store/STORE_LISTING.md`) on purpose.
+- Keep `version` in `manifest.json` and `package.json` in sync; releases are tags `vX.Y.Z` (see `.github/workflows/release.yml`).
+- Workflows: actions pinned by SHA, `persist-credentials: false`, least-privilege `permissions`; validate with zizmor.
+- E2E testing (`tests/e2e/e2e.mjs`): headless Chrome via `--remote-debugging-pipe --enable-unsafe-extension-debugging` + CDP `Extensions.loadUnpacked`. `captureVisibleTab` needs a user gesture for `activeTab`, so the test copy of the manifest adds `<all_urls>`; never ship that. `Browser.setDownloadBehavior` overrides download filenames, so set `download.default_directory` in the profile Preferences instead.
 
 ## Architecture
 
