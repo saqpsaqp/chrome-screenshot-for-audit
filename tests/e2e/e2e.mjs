@@ -99,24 +99,28 @@ async function step(name, fn) {
     console.log(`  ✔ ${name}`);
   } catch (err) {
     results.push({ name, ok: false });
-    console.log(`  ✖ ${name}\n    ${err.stack?.split('\n').slice(0, 3).join('\n    ')}`);
+    console.log(`  ✖ ${name}\n    ${String(err.stack ?? err).split('\n').slice(0, 12).join('\n    ')}`);
   }
 }
 
-function listFiles(dir) {
-  return readdirSync(dir, { recursive: true, withFileTypes: true })
-    .filter((d) => d.isFile() && !d.name.endsWith('.crdownload'))
-    .map((d) => join(d.parentPath ?? d.path, d.name));
-}
-
-async function waitForFiles(count, timeoutMs = 10_000) {
+/** Waits until `pairs` complete PNG + JSON evidence pairs exist (same basename, no partial downloads). */
+async function waitForEvidencePairs(pairs, timeoutMs = 15_000) {
   const start = Date.now();
+  let files = [];
   while (Date.now() - start < timeoutMs) {
-    const files = listFiles(downloadsDir);
-    if (files.length >= count) return files;
+    const all = readdirSync(downloadsDir, { recursive: true, withFileTypes: true })
+      .filter((d) => d.isFile())
+      .map((d) => join(d.parentPath ?? d.path, d.name));
+    files = all.filter((f) => !f.endsWith('.crdownload'));
+    const complete = files
+      .filter((f) => f.endsWith('.png'))
+      .filter((png) => files.includes(png.replace(/\.png$/, '.json')));
+    if (complete.length >= pairs && all.length === files.length) {
+      return complete.sort().map((png) => ({ png, json: png.replace(/\.png$/, '.json') }));
+    }
     await sleep(200);
   }
-  throw new Error(`Expected ${count} downloaded files, got ${listFiles(downloadsDir).length}`);
+  throw new Error(`Expected ${pairs} evidence pair(s), found files: ${JSON.stringify(files)}`);
 }
 
 // --- Run -----------------------------------------------------------------------------------
@@ -145,7 +149,7 @@ try {
     const res = await captureTestPage();
     assert.equal(res.ok, false);
     assert.equal(res.code, 'SESSION_REQUIRED');
-    assert.equal(listFiles(downloadsDir).length, 0);
+    assert.equal(readdirSync(downloadsDir).length, 0);
   });
 
   await evaluate(`chrome.storage.local.set({
@@ -160,12 +164,11 @@ try {
     const res = await captureTestPage();
     assert.equal(res.ok, true, res.error);
     evidence = res.evidence;
-    const files = await waitForFiles(2);
-    pngPath = files.find((f) => f.endsWith('.png'));
-    jsonPath = files.find((f) => f.endsWith('.json'));
+    const [pair] = await waitForEvidencePairs(1);
+    ({ png: pngPath, json: jsonPath } = pair);
     const rel = pngPath.slice(downloadsDir.length + 1);
     assert.match(rel, /^Proof-Shot\/E2E_ PCI_Q4\/\d{4}-\d{2}-\d{2}\/\d{6}_SEC-1234_[0-9a-f]{8}\.png$/);
-    assert.equal(jsonPath, pngPath.replace(/\.png$/, '.json'));
+    assert.ok(rel.includes(evidence.evidence_id.slice(0, 8)), 'file name must carry the evidence id');
   });
 
   await step('PNG on disk matches sha256_final in the JSON sidecar', () => {
@@ -210,7 +213,7 @@ try {
     assert.equal(res.ok, true, res.error);
     assert.equal(res.evidence.network.public_ip, 'unavailable');
     assert.match(res.evidence.network.ip_error, /Invalid IP/);
-    await waitForFiles(4);
+    await waitForEvidencePairs(2);
   });
 
   await step('restricted chrome:// pages fail with a friendly error', async () => {
