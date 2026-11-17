@@ -1,5 +1,8 @@
 # Chrome Web Store listing: Proof-Shot
 
+- Item ID: `npifnacjpepfcndgfjhchmmbifdabmjn`
+- Store URL: https://chromewebstore.google.com/detail/proof-shot/npifnacjpepfcndgfjhchmmbifdabmjn
+
 Copy/paste reference for the Developer Dashboard (<https://chrome.google.com/webstore/devconsole>).
 
 ## Package

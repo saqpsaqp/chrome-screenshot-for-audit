@@ -1,5 +1,7 @@
 # Proof-Shot
 
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/npifnacjpepfcndgfjhchmmbifdabmjn?label=Chrome%20Web%20Store&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/proof-shot/npifnacjpepfcndgfjhchmmbifdabmjn)
+[![Users](https://img.shields.io/chrome-web-store/users/npifnacjpepfcndgfjhchmmbifdabmjn)](https://chromewebstore.google.com/detail/proof-shot/npifnacjpepfcndgfjhchmmbifdabmjn)
 [![CI](https://github.com/saqpsaqp/chrome-screenshot-for-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/saqpsaqp/chrome-screenshot-for-audit/actions/workflows/ci.yml)
 [![Security](https://github.com/saqpsaqp/chrome-screenshot-for-audit/actions/workflows/security.yml/badge.svg)](https://github.com/saqpsaqp/chrome-screenshot-for-audit/actions/workflows/security.yml)
 [![CodeQL](https://github.com/saqpsaqp/chrome-screenshot-for-audit/actions/workflows/codeql.yml/badge.svg)](https://github.com/saqpsaqp/chrome-screenshot-for-audit/actions/workflows/codeql.yml)
@@ -31,7 +33,11 @@ jq -r .integrity.sha256_final 164012_SEC-1234_7c1e2a9b.json
 
 Both values must match. `sha256_original` is the hash of the raw screenshot before the watermark was applied; it is printed on the watermark itself.
 
-## Installation (development)
+## Installation
+
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/proof-shot/npifnacjpepfcndgfjhchmmbifdabmjn).
+
+### Development (unpacked)
 
 1. Open `chrome://extensions/` and enable **Developer mode**.
 2. Click **Load unpacked** and select this folder.
