@@ -4,9 +4,9 @@
 Checks that a Proof-Shot PNG matches its JSON sidecar and was not modified after capture.
 Single file, Python standard library only (3.10+).
 
-    proofshot_verify.py EVIDENCE.png [EVIDENCE.json]
-    proofshot_verify.py --dir Downloads/Proof-Shot/
-    proofshot_verify.py --json --strict evidence.png
+    proof-shot-verify.py EVIDENCE.png [EVIDENCE.json]
+    proof-shot-verify.py --dir Downloads/Proof-Shot/
+    proof-shot-verify.py --json --strict evidence.png
 
 Exit codes: 0 = PASS (or WARN without --strict), 1 = FAIL, 2 = usage / unreadable input.
 

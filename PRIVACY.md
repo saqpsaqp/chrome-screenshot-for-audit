@@ -32,7 +32,7 @@ To obtain your public IP address, the extension sends one HTTPS request per capt
 
 ## Evidence verifier
 
-The optional verifier script (`proofshot_verify.py`) runs on your computer, reads only the files you pass to it and makes no network requests.
+The optional verifier script (`proof-shot-verify.py`) runs on your computer, reads only the files you pass to it and makes no network requests.
 
 ## Your control
 

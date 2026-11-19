@@ -17,7 +17,7 @@ Chrome extension (Manifest V3) that takes **audit-grade screenshots**: each capt
 - **Watermark band** below the screenshot (it never covers page content) with:
   evidence ID, session, case/ticket ID, auditor, local time + timezone, UTC time, URL (**origin + path only**, query string and fragment are dropped to avoid leaking tokens), public IP, browser/OS and the SHA-256 of the original capture.
 - **JSON sidecar** with full metadata (full URL, page title, user agent), capture size and SHA-256 hashes of the original capture, the captured pixels and the final file.
-- **Offline verifier** (`verifier/proofshot_verify.py`, Python stdlib only) to check that a PNG matches its JSON and was not modified.
+- **Offline verifier** (`verifier/proof-shot-verify.py`, Python stdlib only) to check that a PNG matches its JSON and was not modified.
 - **Sessions**: a session name is required before capturing. Files are organised as:
   ```
   Downloads/<root folder>/<session>/<YYYY-MM-DD>/<HHMMSS>_<case>_<id8>.png
@@ -27,13 +27,18 @@ Chrome extension (Manifest V3) that takes **audit-grade screenshots**: each capt
 
 ## Verifying evidence
 
-Download `proofshot_verify.py` from the [latest release](https://github.com/saqpsaqp/chrome-screenshot-for-audit/releases/latest) (or use [`verifier/`](verifier/)). Python 3.10+, no dependencies, no network access.
+Download `proof-shot-verify.py` from the [latest release](https://github.com/saqpsaqp/chrome-screenshot-for-audit/releases/latest) (or use [`verifier/`](verifier/)). Python 3.10+, no dependencies, no network access.
 
 ```bash
-python3 proofshot_verify.py 164012_SEC-1234_7c1e2a9b.png          # JSON sidecar found next to it
-python3 proofshot_verify.py evidence.png evidence.json             # renamed files
-python3 proofshot_verify.py --dir Downloads/Proof-Shot/SOC2/       # a whole session
-python3 proofshot_verify.py --json --strict evidence.png           # CI / scripts
+curl -LO https://github.com/saqpsaqp/chrome-screenshot-for-audit/releases/latest/download/proof-shot-verify.py
+gh attestation verify proof-shot-verify.py --repo saqpsaqp/chrome-screenshot-for-audit   # built by this repo's CI
+```
+
+```bash
+python3 proof-shot-verify.py 164012_SEC-1234_7c1e2a9b.png          # JSON sidecar found next to it
+python3 proof-shot-verify.py evidence.png evidence.json             # renamed files
+python3 proof-shot-verify.py --dir Downloads/Proof-Shot/SOC2/       # a whole session
+python3 proof-shot-verify.py --json --strict evidence.png           # CI / scripts
 ```
 
 | Check | Detects |
@@ -85,7 +90,7 @@ npm run test:e2e      # real captures in headless Chrome, checked with the verif
 | `security.yml` | PR, push to `main`, weekly | gitleaks, Semgrep (SARIF to code scanning), zizmor, dependency review, npm audit |
 | `codeql.yml` | PR, push to `main`, weekly | CodeQL `security-extended` for JavaScript and GitHub Actions |
 | `scorecard.yml` | push to `main`, weekly | OpenSSF Scorecard |
-| `release.yml` | tag `vX.Y.Z` | Full test suite, zip + `proofshot_verify.py` + SHA256SUMS, build provenance attestations, GitHub release |
+| `release.yml` | tag `vX.Y.Z` | Full test suite, zip + `proof-shot-verify.py` + SHA256SUMS, build provenance attestations, GitHub release |
 
 Release: bump `version` in `manifest.json` and `package.json`, merge, then `git tag vX.Y.Z && git push origin vX.Y.Z`. Upload the release zip to the Chrome Web Store.
 

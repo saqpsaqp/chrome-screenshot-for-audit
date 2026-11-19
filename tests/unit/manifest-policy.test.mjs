@@ -58,7 +58,7 @@ describe('manifest policy', () => {
     assert.equal(pkg.version, manifest.version);
   });
   it('ships the evidence verifier with the same version (released together)', () => {
-    const verifier = readFileSync(join(ROOT, 'verifier/proofshot_verify.py'), 'utf8');
+    const verifier = readFileSync(join(ROOT, 'verifier/proof-shot-verify.py'), 'utf8');
     assert.equal(verifier.match(/^__version__ = "([^"]+)"$/m)?.[1], manifest.version);
   });
 });

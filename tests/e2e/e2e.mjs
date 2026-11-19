@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const CHROME_BIN = process.env.CHROME_BIN || 'google-chrome';
 const PYTHON_BIN = process.env.PYTHON_BIN || 'python3';
-const VERIFIER = join(ROOT, 'verifier/proofshot_verify.py');
+const VERIFIER = join(ROOT, 'verifier/proof-shot-verify.py');
 const PORT = 8765;
 const TEST_IP = '203.0.113.42'; // RFC 5737 documentation range
 const SECRET = 'SUPERSECRET-TOKEN';
@@ -197,7 +197,7 @@ try {
   });
 
   // Runs the real verifier against real captures: catches drift between lib/watermark.js
-  // (band layout, canvas encoding) and verifier/proofshot_verify.py.
+  // (band layout, canvas encoding) and verifier/proof-shot-verify.py.
   const runVerifier = (...args) => spawnSync(PYTHON_BIN, ['-I', VERIFIER, '--json', ...args], { encoding: 'utf8' });
 
   await step('verifier passes on the untouched evidence', () => {

@@ -1,4 +1,4 @@
-"""Unit tests for proofshot_verify.py (stdlib unittest, synthetic evidence built on the fly).
+"""Unit tests for proof-shot-verify.py (stdlib unittest, synthetic evidence built on the fly).
 
 Run: python3 -m unittest discover -s verifier/tests
 """
@@ -15,11 +15,14 @@ import sys
 import tempfile
 import unittest
 import zlib
+from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-
-import proofshot_verify as v  # noqa: E402
+# The CLI file name has hyphens (proof-shot-verify.py), so it is loaded by path, not imported.
+_spec = spec_from_file_location("proof_shot_verify", Path(__file__).resolve().parents[1] / "proof-shot-verify.py")
+v = module_from_spec(_spec)
+sys.modules[_spec.name] = v  # dataclasses resolve annotations through sys.modules
+_spec.loader.exec_module(v)
 
 EVIDENCE_ID = "0d39b9de-f625-4e87-99d8-2b3d447811a6"
 

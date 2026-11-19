@@ -38,17 +38,17 @@ jobs:
       - name: Pack
         run: |
           ./pack.sh
-          cp verifier/proofshot_verify.py .
-          sha256sum proof-shot-v*.zip proofshot_verify.py > SHA256SUMS.txt
+          cp verifier/proof-shot-verify.py .
+          sha256sum proof-shot-v*.zip proof-shot-verify.py > SHA256SUMS.txt
       - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: |
             proof-shot-v*.zip
-            proofshot_verify.py
+            proof-shot-verify.py
       - uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
           files: |
             proof-shot-v*.zip
-            proofshot_verify.py
+            proof-shot-verify.py
             SHA256SUMS.txt
           generate_release_notes: true

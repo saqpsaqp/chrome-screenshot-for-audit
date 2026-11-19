@@ -15,7 +15,7 @@ Only the latest version published on the Chrome Web Store is supported.
 
 What Proof-Shot guarantees:
 
-- **Integrity of the file**: `sha256_final` in the JSON sidecar lets anyone detect modification of the PNG after capture (`sha256sum file.png`). `sha256_pixels` (schema 1.1) covers the captured area independently of PNG encoding. `verifier/proofshot_verify.py` checks both plus dimensions, PNG structure, timestamps and naming consistency.
+- **Integrity of the file**: `sha256_final` in the JSON sidecar lets anyone detect modification of the PNG after capture (`sha256sum file.png`). `sha256_pixels` (schema 1.1) covers the captured area independently of PNG encoding. `verifier/proof-shot-verify.py` checks both plus dimensions, PNG structure, timestamps and naming consistency.
 - **No secret leakage on the image**: the watermark shows the URL without query string, fragment or credentials.
 - **Minimal attack surface**: `activeTab` only (no `<all_urls>`), no content scripts, no `externally_connectable`, no remote code; messages are accepted only from the extension's own pages; the third-party IP response is validated before use.
 
