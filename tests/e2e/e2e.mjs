@@ -8,9 +8,9 @@
 // Usage: node tests/e2e/e2e.mjs   (CHROME_BIN overrides the browser binary)
 
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { cpSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
+import { copyFileSync, cpSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
 import http from 'node:http';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -18,6 +18,8 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const CHROME_BIN = process.env.CHROME_BIN || 'google-chrome';
+const PYTHON_BIN = process.env.PYTHON_BIN || 'python3';
+const VERIFIER = join(ROOT, 'verifier/proofshot_verify.py');
 const PORT = 8765;
 const TEST_IP = '203.0.113.42'; // RFC 5737 documentation range
 const SECRET = 'SUPERSECRET-TOKEN';
@@ -185,6 +187,37 @@ try {
     const tab = await evaluate(`chrome.tabs.query({ url: 'http://localhost:${PORT}/*' }).then(([t]) => ({ w: t.width, h: t.height }))`);
     assert.equal(width, tab.w);
     assert.ok(height > tab.h + 50, `expected a band below ${tab.w}x${tab.h}, got ${width}x${height}`);
+  });
+
+  await step('capture size and pixel hash are recorded (schema 1.1)', async () => {
+    const tab = await evaluate(`chrome.tabs.query({ url: 'http://localhost:${PORT}/*' }).then(([t]) => ({ w: t.width, h: t.height }))`);
+    assert.equal(evidence.schema_version, '1.1');
+    assert.deepEqual([evidence.capture.width, evidence.capture.height], [tab.w, tab.h]);
+    assert.match(evidence.integrity.sha256_pixels, /^[0-9a-f]{64}$/);
+  });
+
+  // Runs the real verifier against real captures: catches drift between lib/watermark.js
+  // (band layout, canvas encoding) and verifier/proofshot_verify.py.
+  const runVerifier = (...args) => spawnSync(PYTHON_BIN, ['-I', VERIFIER, '--json', ...args], { encoding: 'utf8' });
+
+  await step('verifier passes on the untouched evidence', () => {
+    const res = runVerifier(pngPath);
+    assert.equal(res.status, 0, res.stderr || res.stdout);
+    const report = JSON.parse(res.stdout);
+    assert.equal(report.status, 'PASS', res.stdout);
+    assert.ok(report.checks.every((c) => c.status === 'PASS'), res.stdout);
+    assert.equal(report.evidence_id, evidence.evidence_id);
+  });
+
+  await step('verifier fails on a tampered capture', () => {
+    const forged = join(work, 'forged.png');
+    copyFileSync(pngPath, forged);
+    const bytes = readFileSync(forged);
+    bytes[bytes.length - 20] ^= 0xff; // inside the last chunk
+    writeFileSync(forged, bytes);
+    const res = runVerifier(forged, jsonPath);
+    assert.equal(res.status, 1, res.stdout);
+    assert.equal(JSON.parse(res.stdout).status, 'FAIL');
   });
 
   await step('URL secrets only in JSON, redacted URL for the watermark', () => {

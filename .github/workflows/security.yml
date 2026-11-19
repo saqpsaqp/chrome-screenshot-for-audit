@@ -39,7 +39,7 @@ jobs:
         run: |
           docker run --rm -v "$PWD:/src" -w /src semgrep/semgrep:1.185.0 \
             semgrep scan --metrics=off --error \
-              --config p/javascript --config p/secrets --config p/github-actions \
+              --config p/javascript --config p/python --config p/secrets --config p/github-actions \
               --exclude node_modules --sarif --output semgrep.sarif
       - name: Upload SARIF
         if: always() && hashFiles('semgrep.sarif') != ''

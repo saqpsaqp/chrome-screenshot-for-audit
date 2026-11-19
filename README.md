@@ -16,7 +16,8 @@ Chrome extension (Manifest V3) that takes **audit-grade screenshots**: each capt
 - **Visible-area capture** from the popup or a keyboard shortcut (default `Alt+Shift+S`, configurable at `chrome://extensions/shortcuts`).
 - **Watermark band** below the screenshot (it never covers page content) with:
   evidence ID, session, case/ticket ID, auditor, local time + timezone, UTC time, URL (**origin + path only**, query string and fragment are dropped to avoid leaking tokens), public IP, browser/OS and the SHA-256 of the original capture.
-- **JSON sidecar** with full metadata (full URL, page title, user agent) and both hashes.
+- **JSON sidecar** with full metadata (full URL, page title, user agent), capture size and SHA-256 hashes of the original capture, the captured pixels and the final file.
+- **Offline verifier** (`verifier/proofshot_verify.py`, Python stdlib only) to check that a PNG matches its JSON and was not modified.
 - **Sessions**: a session name is required before capturing. Files are organised as:
   ```
   Downloads/<root folder>/<session>/<YYYY-MM-DD>/<HHMMSS>_<case>_<id8>.png
@@ -26,12 +27,35 @@ Chrome extension (Manifest V3) that takes **audit-grade screenshots**: each capt
 
 ## Verifying evidence
 
+Download `proofshot_verify.py` from the [latest release](https://github.com/saqpsaqp/chrome-screenshot-for-audit/releases/latest) (or use [`verifier/`](verifier/)). Python 3.10+, no dependencies, no network access.
+
 ```bash
-sha256sum 164012_SEC-1234_7c1e2a9b.png
-jq -r .integrity.sha256_final 164012_SEC-1234_7c1e2a9b.json
+python3 proofshot_verify.py 164012_SEC-1234_7c1e2a9b.png          # JSON sidecar found next to it
+python3 proofshot_verify.py evidence.png evidence.json             # renamed files
+python3 proofshot_verify.py --dir Downloads/Proof-Shot/SOC2/       # a whole session
+python3 proofshot_verify.py --json --strict evidence.png           # CI / scripts
 ```
 
-Both values must match. `sha256_original` is the hash of the raw screenshot before the watermark was applied; it is printed on the watermark itself.
+| Check | Detects |
+|---|---|
+| `sha256_final` | Any change to the PNG file |
+| `sha256_pixels` | Edits to the screenshot area; tells apart a lossless re-encode (WARN, content intact) from a content change (FAIL) |
+| `dimensions` | Cropping, resizing or a replaced watermark band |
+| `png_structure` | Corrupted chunks, data appended after the image |
+| `timestamps` | UTC/local/timezone values that do not describe the same instant |
+| `naming` | Evidence id, time or date in the file name that disagree with the JSON |
+| `schema` | Unknown schema version, missing fields, malformed hashes |
+
+It also prints the watermark text rebuilt from the JSON, to compare by eye with the band on the image. Exit code: `0` pass (or warnings), `1` fail (or warnings with `--strict`), `2` usage error.
+
+The verifier proves the two files are **unmodified and consistent**, not that they are authentic: someone holding both can forge a new consistent pair (see [SECURITY.md](SECURITY.md)). Without the script:
+
+```bash
+sha256sum 164012_SEC-1234_7c1e2a9b.png
+jq -r .integrity.sha256_final 164012_SEC-1234_7c1e2a9b.json   # must match
+```
+
+`sha256_original` is the hash of the PNG returned by Chrome before the watermark was applied (printed on the watermark). It cannot be recomputed from the final file; `sha256_pixels` is the verifiable equivalent for the captured area.
 
 ## Installation
 
@@ -49,18 +73,19 @@ Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/pro
 npm ci                # dev tooling only (ESLint); the extension has no runtime deps
 npm run lint          # ESLint with security + no-unsanitized rules
 npm test              # unit tests + manifest/source security policy
-npm run test:e2e      # real captures in headless Chrome (CHROME_BIN to override)
+npm run test:verifier # Python verifier unit tests (python3 -m unittest)
+npm run test:e2e      # real captures in headless Chrome, checked with the verifier (CHROME_BIN / PYTHON_BIN)
 ```
 
 ### CI/CD
 
 | Workflow | Trigger | What it does |
 |---|---|---|
-| `ci.yml` | PR, push to `main` | Lint, unit + policy tests, E2E in headless Chrome, builds the store zip as an artifact |
+| `ci.yml` | PR, push to `main` | Lint, unit + policy tests, verifier tests (Python 3.10 and latest), E2E in headless Chrome, builds the store zip as an artifact |
 | `security.yml` | PR, push to `main`, weekly | gitleaks, Semgrep (SARIF to code scanning), zizmor, dependency review, npm audit |
 | `codeql.yml` | PR, push to `main`, weekly | CodeQL `security-extended` for JavaScript and GitHub Actions |
 | `scorecard.yml` | push to `main`, weekly | OpenSSF Scorecard |
-| `release.yml` | tag `vX.Y.Z` | Full test suite, zip + SHA256SUMS, build provenance attestation, GitHub release |
+| `release.yml` | tag `vX.Y.Z` | Full test suite, zip + `proofshot_verify.py` + SHA256SUMS, build provenance attestations, GitHub release |
 
 Release: bump `version` in `manifest.json` and `package.json`, merge, then `git tag vX.Y.Z && git push origin vX.Y.Z`. Upload the release zip to the Chrome Web Store.
 
@@ -84,7 +109,9 @@ Full policy: [PRIVACY.md](PRIVACY.md). Security model and vulnerability reportin
 ## Roadmap
 
 - [x] v1.0: visible capture, watermark, JSON sidecar, sessions, shortcut, history, store assets
-- [ ] v1.1: region selection
+- [x] v1.1: offline evidence verifier (CLI), schema 1.1 with pixel hash and capture size
+- [ ] v1.2: verifier web page (drag and drop, offline)
+- [ ] v1.3: region selection
 
 ## License
 

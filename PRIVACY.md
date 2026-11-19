@@ -1,6 +1,6 @@
 # Proof-Shot Privacy Policy
 
-_Last updated: 2026-11-16_
+_Last updated: 2026-11-18_
 
 Proof-Shot is a Chrome extension that takes screenshots for audit evidence. It is designed to keep your data on your device.
 
@@ -29,6 +29,10 @@ To obtain your public IP address, the extension sends one HTTPS request per capt
 - It does not use analytics, tracking, advertising or remote code.
 - It does not sell or transfer user data to third parties.
 - It does not use or transfer data for purposes unrelated to its single purpose, or to determine creditworthiness or for lending purposes.
+
+## Evidence verifier
+
+The optional verifier script (`proofshot_verify.py`) runs on your computer, reads only the files you pass to it and makes no network requests.
 
 ## Your control
 
