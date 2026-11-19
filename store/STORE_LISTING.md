@@ -35,8 +35,9 @@ EVERY CAPTURE INCLUDES
   – Page URL (domain and path only: query strings and fragments are hidden so tokens never leak)
   – Public IP address, browser and operating system
   – SHA-256 hash of the original screenshot
-• A JSON evidence file with full metadata and two SHA-256 hashes (original capture and final watermarked image), so anyone can verify the file was not altered:
+• A JSON evidence file with full metadata and SHA-256 hashes (original capture, captured pixels and final watermarked image), so anyone can verify the file was not altered:
   sha256sum capture.png  → must match "sha256_final"
+• A free, open-source offline verifier (Python, no dependencies) checks a capture or a whole session folder in one command
 
 ORGANISED BY SESSION
 Start a session (e.g. "SOC2 2026 Q4") and every capture is saved automatically to:

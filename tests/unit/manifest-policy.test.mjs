@@ -57,6 +57,10 @@ describe('manifest policy', () => {
     const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
     assert.equal(pkg.version, manifest.version);
   });
+  it('ships the evidence verifier with the same version (released together)', () => {
+    const verifier = readFileSync(join(ROOT, 'verifier/proof-shot-verify.py'), 'utf8');
+    assert.equal(verifier.match(/^__version__ = "([^"]+)"$/m)?.[1], manifest.version);
+  });
 });
 
 describe('source policy', () => {
@@ -99,6 +103,6 @@ describe('source policy', () => {
     const packed = new Set(packagedFiles());
     const runtime = sources.filter((f) => !f.endsWith('.config.mjs'));
     for (const f of runtime) assert.ok(packed.has(f), `${f} is not in pack.sh`);
-    for (const f of packed) assert.ok(!/^(tests|store|node_modules)\//.test(f) && !f.endsWith('.md'), `${f} must not be packaged`);
+    for (const f of packed) assert.ok(!/^(tests|store|node_modules|verifier)\//.test(f) && !f.endsWith('.md'), `${f} must not be packaged`);
   });
 });
